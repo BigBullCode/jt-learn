@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+   <!--  <context:component-scan base-package="com.appsec.system.dispatcher.common"/> -->
+    <context:component-scan base-package="Qtest"/>
+
+    <!--&lt;!&ndash;单机配置 start&ndash;&gt;-->
+    <bean id="autoUploadDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="QuartzTest"></property>
+        <property name="targetMethod" value="test"></property>
+        <property name="concurrent" value="true"></property>
+        <!-- concurrent : false表示等上一个任务执行完后再开启新的任务 -->
+    </bean>
+
+    <bean id="autoUploadTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="autoUploadDetail"></property>
+        <property name="cronExpression" value="0/3 * * * * ?"></property>
+        <property name="startDelay" value="3000"></property>
+    </bean>
+
+
+    <bean id="autoUploaderScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="autoUploadTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
